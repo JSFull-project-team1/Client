@@ -9,9 +9,9 @@ import Modal from './modal/Modal.jsx';
 import { useDispatch } from 'react-redux';
 
 
-const BookingDetail = ({item, isActive, index,setItemData, itemData}) => {
+const BookingDetail = ({item, isActive, index,setItemData, itemData, update, setUpdate}) => {
 
-    const navigate = useNavigate();
+    
     const[isHovered, setIsHovered] = useState(false); // 마우스 호버 상태를 표시하는 데 사용
     const[isHovered2,setIsHovered2] = useState(false);
     
@@ -26,6 +26,7 @@ const BookingDetail = ({item, isActive, index,setItemData, itemData}) => {
     const [roomId, setRoomId] = useState(null); //삭제할 숙소의 ID 저장
     const [showModal, setShowModal] = useState(false);// 모달 창의 표시 여부를 관리
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     
 
     // 날짜 포맷팅
@@ -90,14 +91,11 @@ const BookingDetail = ({item, isActive, index,setItemData, itemData}) => {
     // 모달의 확인 버튼 클릭 시 삭제를 실행
     const clickConfirmRemove = () => {
         handleConfirmRemove();
-        // console.log("삭제완료")
     }
 
        
 
-    // // cancleBooking함수를 통해 예약취소버튼 클릭시 예약내역에서 사라지는 기능 구현
-    // // 클릭한 item이 뭔지
-    // // 그냥 booking에서 delete. 
+    // cancleBooking함수를 통해 예약취소버튼 클릭시 예약내역에서 사라지는 기능 구현
     const handleConfirmRemove =  async() => {
         
         try{ const response = await fetch(`http://localhost:8000/booking/updateBookingList`,
@@ -113,13 +111,8 @@ const BookingDetail = ({item, isActive, index,setItemData, itemData}) => {
             
             // 요청이 성공하여 정상적으로 삭제되었다면,
              if(response.ok){
-                // server에서 받아온 삭제한 예약 건
-                const deletedBooking = await response.json();
-
-                const updatedBookingList = itemData.filter(booking => booking.roomId._id !== deletedBooking.data.roomId._id);
-
-                //  예약 취소 후 화면에서 삭제 처리
-                setItemData(updatedBookingList);
+                // 상태를 반전시켜 컴포넌트를 리렌더링 (이는 useEffect 훅을 재실행하여 화면을 새로 고치기 위함)
+                setUpdate(update ? false : true); 
 
                 // 사용자를 bookingList 페이지로 리디렉션
                 navigate('/bookingList') 
